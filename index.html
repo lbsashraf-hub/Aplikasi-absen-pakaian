@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Queen Laundry - Exclusive Management</title>
+    <!-- Manifest & PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#831843">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <!-- Google Fonts Plus Jakarta Sans & Cormorant Garamond -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase CDN -->
@@ -537,7 +543,7 @@
         <p>Exclusive Management & Premium Service</p>
     </header>
 
-    <!-- KOTAK INFORMASI MASA AKTIF APLIKASI (DIPINDAHKAN KE ATAS) -->
+    <!-- KOTAK INFORMASI MASA AKTIF APLIKASI -->
     <div id="infoMasaAktifBox" style="display: none;" class="card" style="margin-bottom: 18px; border-left: 4px solid #059669; text-align: center;">
         <h4 style="font-size: 14px; color: var(--primary); margin-bottom: 6px;">📢 Status Lisensi Aplikasi</h4>
         <p id="teksStatusMasaAktif" style="font-size: 12px; color: var(--text-sub); justify-content: center; margin-bottom: 12px;"></p>
@@ -615,8 +621,8 @@
         let activeIdLaundry = null;
 
         // --- PENGATURAN MASA AKTIF & KATA SANDI ---
-        const KATA_SANDI_DEVELOPER = 'ashraf123'; // 🔐 Ganti kata sandi sesuai keinginan Anda di sini
-        const NOMOR_WA_DEVELOPER = '6285770246502'; // 📱 Ganti dengan nomor WhatsApp Anda (Developer Ashraf)
+        const KATA_SANDI_DEVELOPER = 'ashraf123'; 
+        const NOMOR_WA_DEVELOPER = '6285770246502'; 
 
         // INISIALISASI SUPABASE
         const SUPABASE_URL = 'https://uxutxeclfcvcvdiydmpw.supabase.co';
@@ -631,10 +637,10 @@
             console.warn('Supabase init warning:', e);
         }
 
-        // Fungsi Cek Masa Aktif dari Supabase secara Asynchronous dengan Pengingat & Sisa Hari
+        // Fungsi Cek Masa Aktif dari Supabase secara Asynchronous
         async function cekMasaAktif() {
             try {
-                let tanggalExpired = '2026-10-01'; // Default fallback jika offline/gagal memuat
+                let tanggalExpired = '2026-10-01';
 
                 if (_supabase) {
                     let { data, error } = await _supabase
@@ -664,20 +670,17 @@
                 let infoBox = document.getElementById('infoMasaAktifBox');
                 let teksInfo = document.getElementById('teksStatusMasaAktif');
 
-                // Jika sudah kedaluwarsa
                 if (hariIni > tanggalExpired) {
                     document.getElementById('expiredModal').classList.add('show');
                     infoBox.style.display = 'block';
                     infoBox.style.borderLeftColor = '#e11d48';
                     teksInfo.innerHTML = `⚠️ <b>Masa aktif telah habis!</b> Silakan lakukan perpanjangan aplikasi melalui developer <b>Ashraf NR</b>.`;
                 } 
-                // Jika mendekati kedaluwarsa (sisa 3 hari atau kurang)
                 else if (sisaHari <= 3 && sisaHari >= 0) {
                     infoBox.style.display = 'block';
                     infoBox.style.borderLeftColor = '#f59e0b';
                     teksInfo.innerHTML = `⚠️ Masa aktif aplikasi akan habis dalam <b>${sisaHari} hari lagi</b> (${tanggalExpired}). Silakan lakukan perpanjangan melalui developer <b>Ashraf NR</b>.`;
                 } 
-                // Jika masih lama
                 else {
                     infoBox.style.display = 'block';
                     infoBox.style.borderLeftColor = '#059669';
@@ -705,7 +708,6 @@
             if (sandiInput === KATA_SANDI_DEVELOPER) {
                 tutupAuthModal();
                 
-                // Ambil tanggal expired saat ini dari Supabase untuk ditampilkan di input pengaturan
                 let tanggalAktif = '2026-10-01';
                 if (_supabase) {
                     let { data } = await _supabase
@@ -759,7 +761,6 @@
 
         async function fetchDataFromSupabase() {
             if (!_supabase) {
-                // Fallback jika Supabase gagal dimuat secara offline
                 dataLaundry = JSON.parse(localStorage.getItem('queen_laundry_local') || '[]');
                 renderData();
                 return;
@@ -980,6 +981,19 @@
                 localStorage.setItem('queen_laundry_local', JSON.stringify(dataLaundry));
                 await fetchDataFromSupabase();
             }
+        }
+
+        // --- DAFTARKAN SERVICE WORKER UNTUK FITUR PWA ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker pendaftaran berhasil: ', registration.scope);
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker pendaftaran gagal: ', err);
+                    });
+            });
         }
     </script>
 </body>
