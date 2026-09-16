@@ -1,0 +1,15 @@
+{
+  "name": "Queen Laundry Management",
+  "short_name": "Absen Pakaian",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff1f2",
+  "theme_color": "#831843",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3003/3003007.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
